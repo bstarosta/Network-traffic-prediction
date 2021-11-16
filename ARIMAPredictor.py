@@ -9,10 +9,13 @@ from DataLoader import DataLoader
 from ErrorCalculator import ErrorCalculator
 
 FILE_NAMES = ["pair1.csv", "pair2.csv", "pair3.csv"]
+MODEL_ORDERS = [(3, 1, 0), (2, 1, 1), (3, 1, 0)]
+MODEL_SEASONAL_ORDERS = [(3, 1, 0, 7), (3, 1, 0, 7), (3, 1, 0, 7)]
 
-for file in FILE_NAMES:
+results = [None] * len(FILE_NAMES)
 
-    df = DataLoader.get_standardized_data(file)
+for i in range(len(FILE_NAMES)):
+    df = DataLoader.get_standardized_data(FILE_NAMES[i])
     y = df.drop("Time", axis="columns")
     X = df.drop("Count", axis="columns")
 
@@ -35,7 +38,7 @@ for file in FILE_NAMES:
     #                    error_action='warn', suppress_warnings=True, random_state=20)
     # arima.summary()
 
-    model = SARIMAX(df['Count'], order=(3, 1, 0), seasonal_order=(3, 1, 0, 7))
+    model = SARIMAX(df['Count'], order=MODEL_ORDERS[i], seasonal_order=MODEL_SEASONAL_ORDERS[i])
 
     result = model.fit()
     # result.summary()
@@ -50,7 +53,7 @@ for file in FILE_NAMES:
 
     x_plot_axis = [dt.datetime.strptime(date, "%d.%m.%Y %H:%M") for date in df.iloc[test_0]["Time"]]
 
-    plt.title("ARIMA " + file)
+    plt.title("ARIMA " + FILE_NAMES[i])
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y %H:%M'))
     plt.gca().xaxis.set_major_locator(mdates.DayLocator())
     plt.plot(x_plot_axis, y_test, label="Actual traffic")
@@ -64,5 +67,10 @@ for file in FILE_NAMES:
     # how to measure accuracy???
     mape = ErrorCalculator.calculate_mape(y_test, predictions)
     rmse = ErrorCalculator.calculate_rmse(y_test, predictions)
-    print('MAPE: %f' % mape)
-    print('RMSE: %f' % rmse)
+    # print('MAPE: %f' % mape)
+    # print('RMSE: %f' % rmse)
+    results[i] = mape
+
+print(results)
+with open('Results/arima_results.txt', 'w') as f:
+    print('MAPE:', results, file=f)
