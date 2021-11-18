@@ -41,7 +41,6 @@ for i in range(len(FILE_NAMES)):
     model = SARIMAX(df['Count'], order=MODEL_ORDERS[i], seasonal_order=MODEL_SEASONAL_ORDERS[i])
 
     result = model.fit()
-    # result.summary()
 
     start = test_0[0]
     end = test_0[len(test_0) - 1]
@@ -64,11 +63,8 @@ for i in range(len(FILE_NAMES)):
     print(y_test)
     print(predictions)
 
-    # how to measure accuracy???
     mape = ErrorCalculator.calculate_mape(y_test, predictions)
     rmse = ErrorCalculator.calculate_rmse(y_test, predictions)
-    # print('MAPE: %f' % mape)
-    # print('RMSE: %f' % rmse)
     results[i] = mape
 
 print(results)

@@ -12,8 +12,8 @@ from NetworkTrafficDataProcessor import NetworkTrafficDataProcessor
 
 
 FILE_NAMES = ["pair1.csv", "pair2.csv", "pair3.csv"]
-HIDDEN_LAYER_STRUCTURES = [(300,), (50,), (300, 200), (50, 30), (300, 200, 4), (50, 30, 15),
-                           (300, 20, 150, 100), (50, 30, 3, 2)]
+HIDDEN_LAYER_STRUCTURES = [(300,), (50,), (300, 200), (50, 30), (300, 200, 50), (50, 30, 15),
+                           (300, 20, 150, 100), (50, 30, 20, 15)]
 
 results = np.zeros((len(FILE_NAMES), len(HIDDEN_LAYER_STRUCTURES)))
 
@@ -38,7 +38,6 @@ for i in range(len(FILE_NAMES)):
     X_train = X.iloc[train_0]
     y_train = y.iloc[train_0]
 
-
     X_test = X.iloc[test_0]
     y_test = y.iloc[test_0]
 
@@ -46,14 +45,11 @@ for i in range(len(FILE_NAMES)):
 
     for j in range(len(HIDDEN_LAYER_STRUCTURES)):
 
-        mlp_regressor = MLPRegressor(random_state=42, hidden_layer_sizes=HIDDEN_LAYER_STRUCTURES[j], max_iter=1500).fit(X_train, y_train)
+        mlp_regressor = MLPRegressor(random_state=12, hidden_layer_sizes=HIDDEN_LAYER_STRUCTURES[j], max_iter=1500).fit(X_train, y_train)
         predictor_y = mlp_regressor.predict(X_test)
 
         mape = ErrorCalculator.calculate_mape(y_test, predictor_y)
         rmse = ErrorCalculator.calculate_rmse(y_test, predictor_y)
-        # print(mlp_regressor.score(X_test, y_test))
-        #         # print('MAPE: %f' % mape)
-        #         # print('RMSE: %f' % rmse)
 
         results[i][j] = mape
 
@@ -66,16 +62,7 @@ for i in range(len(FILE_NAMES)):
         plt.legend()
         plt.show()
 
-
-print(results)
-
-# headers = list(clfs.keys())
-# names_column = np.array(headers)[np.newaxis].T
-# advantage_table = tabulate(np.concatenate((names_column, advantage), axis=1), headers)
-
 rows = np.array([FILE_NAMES]).T
-# headers = list(map(''.join, HIDDEN_LAYER_STRUCTURES))
-# headers = np.zeros(len(HIDDEN_LAYER_STRUCTURES))
 
 for i in range(len(HIDDEN_LAYER_STRUCTURES)):
     tuple_string = [str(value) for value in HIDDEN_LAYER_STRUCTURES[i]]
