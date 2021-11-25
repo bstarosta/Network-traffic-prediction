@@ -1,8 +1,8 @@
 import datetime as dt
+
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.model_selection import TimeSeriesSplit
 from sklearn.neural_network import MLPRegressor
 from tabulate import tabulate
 
@@ -10,10 +10,10 @@ from DataLoader import DataLoader
 from ErrorCalculator import ErrorCalculator
 from NetworkTrafficDataProcessor import NetworkTrafficDataProcessor
 
-
 FILE_NAMES = ["pair1.csv", "pair2.csv", "pair3.csv"]
-HIDDEN_LAYER_STRUCTURES = [(300,), (50,), (300, 200), (50, 30), (300, 200, 50), (50, 30, 15),
+HIDDEN_LAYER_STRUCTURES = [(30,), (50,), (300, 200), (50, 30), (300, 200, 50), (50, 30, 15),
                            (300, 20, 150, 100), (50, 30, 20, 15)]
+TEST_SIZE = 5000
 
 results = np.zeros((len(FILE_NAMES), len(HIDDEN_LAYER_STRUCTURES)))
 
@@ -25,27 +25,17 @@ for i in range(len(FILE_NAMES)):
     X = processed_data.drop("Count", axis="columns")
     y = processed_data["Count"]
 
-    ts_cv = TimeSeriesSplit(
-        n_splits=5,
-        gap=48,
-        max_train_size=10000,
-        test_size=1000,
-    )
+    X_train = X.iloc[:-TEST_SIZE]
+    y_train = y.iloc[:-TEST_SIZE]
 
-    all_splits = list(ts_cv.split(X, y))
-    train_0, test_0 = all_splits[0]
+    X_test = X.iloc[-TEST_SIZE:]
+    y_test = y.iloc[-TEST_SIZE:]
 
-    X_train = X.iloc[train_0]
-    y_train = y.iloc[train_0]
-
-    X_test = X.iloc[test_0]
-    y_test = y.iloc[test_0]
-
-    x_plot_axis = [dt.datetime.strptime(date, "%d.%m.%Y %H:%M") for date in df.iloc[test_0]["Time"]]
+    x_plot_axis = [dt.datetime.strptime(date, "%d.%m.%Y %H:%M") for date in df.iloc[-TEST_SIZE:]["Time"]]
 
     for j in range(len(HIDDEN_LAYER_STRUCTURES)):
 
-        mlp_regressor = MLPRegressor(random_state=12, hidden_layer_sizes=HIDDEN_LAYER_STRUCTURES[j], max_iter=1500).fit(X_train, y_train)
+        mlp_regressor = MLPRegressor(random_state=24, hidden_layer_sizes=HIDDEN_LAYER_STRUCTURES[j], max_iter=1500).fit(X_train, y_train)
         predictor_y = mlp_regressor.predict(X_test)
 
         mape = ErrorCalculator.calculate_mape(y_test, predictor_y)
