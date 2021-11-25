@@ -17,7 +17,7 @@ results = [None] * len(FILE_NAMES)
 for i in range(len(FILE_NAMES)):
     df = DataLoader.get_standardized_data(FILE_NAMES[i])
     y = df.drop("Time", axis="columns")
-    X = df.drop("Count", axis="columns")
+    X = df.drop("Traffic", axis="columns")
     y_test = y.iloc[-TEST_SIZE:]
 
     # arima = auto_arima(y_train.to_numpy(), start_p=1, start_q=1, max_p=3, max_q=3, start_P=0, start_Q=1, max_P=3,

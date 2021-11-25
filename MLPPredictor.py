@@ -22,8 +22,8 @@ for i in range(len(FILE_NAMES)):
     df = DataLoader.get_standardized_data(FILE_NAMES[i])
     processed_data = NetworkTrafficDataProcessor.add_features(df)
 
-    X = processed_data.drop("Count", axis="columns")
-    y = processed_data["Count"]
+    X = processed_data.drop("Traffic", axis="columns")
+    y = processed_data["Traffic"]
 
     X_train = X.iloc[:-TEST_SIZE]
     y_train = y.iloc[:-TEST_SIZE]
