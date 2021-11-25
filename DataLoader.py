@@ -5,7 +5,7 @@ class DataLoader:
 
     @staticmethod
     def standardize_column_names(dataframe):
-        dataframe.rename(columns={dataframe.columns[1]: "Count"}, inplace=True)
+        dataframe.rename(columns={dataframe.columns[1]: "Traffic"}, inplace=True)
 
     @staticmethod
     def load_data(filename):

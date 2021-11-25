@@ -11,7 +11,7 @@ class NetworkTrafficDataProcessor:
         weekdays = [date.weekday() for date in date_times]
         hours = [date.timetuple().tm_hour for date in date_times]
         minutes = [date.timetuple().tm_min for date in date_times]
-        previous = dataframe["Count"].shift(1)
+        previous = dataframe["Traffic"].shift(1)
         one_hot_weekdays = pd.get_dummies(weekdays, prefix="Weekday")
         dataframe["Hours"] = hours
         dataframe["Minutes"] = minutes
